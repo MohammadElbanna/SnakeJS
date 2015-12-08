@@ -182,20 +182,15 @@ function resize () {
     var optimalRatio = Math.min(scaleToFitX, scaleToFitY);
 //    var optimalRatio = Math.max(scaleToFitX, scaleToFitY);
 
-
+    // 16:9 screen sizes.
     if (currentScreenRatio >= 1.77 && currentScreenRatio <= 1.79) {
         canvas.style.width = gameWidth + "px";
         canvas.style.height = gameHeight + "px";
     }
     else {
-//        canvas.style.width = (800 * optimalRatio) + "px";
-//        canvas.style.height = (480 * optimalRatio) + "px";
-//        blockSize = 10 * optimalRatio;
         canvas.style.width = 1280 * scaleToFitX + "px";
         canvas.style.height = 720 * scaleToFitY + "px";
     }
-    console.log("width in cells: " + canvas.style.width);
-    console.log("height in cells: " + canvas.style.height);
 }
 
 window.addEventListener("resize", resize, true)
