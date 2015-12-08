@@ -38,6 +38,23 @@ var Snake = function () {
     this.nextDirection = "right";
 }
 
+// takes the head as input and return true if head hit the walls or the body of the snake
+Snake.prototype.checkCollision = function (head) {
+    
+    var wallCollision = (head.col == 0) || (head.row == 0) || (head.col == widthInBlocks - 1) || (head.row == heightInBlocks - 1);
+    
+    var selfCollision = false;
+    
+    for(var i = 0; i < this.segments.length; i++) {
+        if(head.equal(this.segments[i])) {
+            seflCollision = true;
+            break;
+        }
+    }
+    
+    return wallCollision || selfCollision;
+}
+
 Snake.prototype.move = function () {
     var head = this.segments[0];
     var newHead; 
@@ -68,6 +85,11 @@ Snake.prototype.move = function () {
     }
     else if (this.direction === "up") {
         newHead = new Block(head.col, head.row - 1);
+    }
+    
+    if (this.checkCollision(newHead)) {
+        gameOver();
+        return;
     }
     
     // push the new head at the first index of the array
@@ -125,6 +147,7 @@ var drawScore = function () {
 // draw game over
 var gameOver = function () {
     cancelAnimationFrame(gameLoop);
+    document.removeEventListener("keydown", keyBoardListner, true);
     ctx.font = "60px Courier";
     ctx.fillStyle = "Black";
     ctx.textAlign = "center";
@@ -134,6 +157,7 @@ var gameOver = function () {
 
 
 var snake = new Snake();
+
 var frames = 0;
 
 function gameLoop () {
@@ -167,10 +191,11 @@ var mapKeyborad = {
     40: "down"
 };
 
-document.addEventListener("keydown", function(event) {
+function keyBoardListner(event) {
     snake.nextDirection = mapKeyborad[event.keyCode];
-//    snake.move();
-})
+}
+
+document.addEventListener("keydown", keyBoardListner, true);
 
 function resize () {
     var gameWidth = window.innerWidth;
