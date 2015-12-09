@@ -14,15 +14,39 @@ var heightInBlocks = height / blockSize;
 
 var score = 0;
 
+var paused = false;
+
 // Block constructor
 var Block = function (col, row){
     this.col = col;
     this.row = row;
 }
 
+
 // return true if 2 blocks are on the same spot
 Block.prototype.equal = function (otherBlock) {
     return this.col === otherBlock.col && this.row === otherBlock.row;
+}
+
+// Apple constructor
+var Apple = function () {
+    this.position = new Block(10, 10);
+}
+
+// move the apple to a new random location
+Apple.prototype.move = function (snake) {
+    var randCol = Math.floor(Math.random() * (widthInBlocks - 2)) + 1;
+    var randRow = Math.floor(Math.random() * (heightInBlocks - 2)) + 1;
+    var tempBlock = new Block (randCol, randRow);
+    
+    for(var i = 0; i < snake.segments.length; i++) {
+        if(snake.segments[i].equal(tempBlock)){
+            this.move();
+            return;
+        }
+    }
+    // when we reach here, we now that the new position is safe.
+    this.position = tempBlock;
 }
 
 
@@ -38,7 +62,31 @@ var Snake = function () {
     this.nextDirection = "right";
 }
 
-// takes the head as input and return true if head hit the walls or the body of the snake
+Snake.prototype.setDirection = function (direction) {
+    
+    if (paused)
+        return;
+    
+    if (direction == "left" && this.direction == "right") {
+        return;
+    }
+    else if (direction == "right" && this.direction == "left") {
+        return;
+    }
+    else if (direction == "up" && this.direction == "down") {
+        return;
+    }
+    else if (direction == "down" && this.direction == "up") {
+        return;
+    }
+    
+    // if it's legal move, then change the direction state
+    this.nextDirection = direction;
+};
+
+/*
+takes the head as input and return true if head hit the walls or the body of the snake
+*/
 Snake.prototype.checkCollision = function (head) {
     
     var wallCollision = (head.col == 0) || (head.row == 0) || (head.col == widthInBlocks - 1) || (head.row == heightInBlocks - 1);
@@ -47,7 +95,7 @@ Snake.prototype.checkCollision = function (head) {
     
     for(var i = 0; i < this.segments.length; i++) {
         if(head.equal(this.segments[i])) {
-            seflCollision = true;
+            selfCollision = true;
             break;
         }
     }
@@ -58,19 +106,6 @@ Snake.prototype.checkCollision = function (head) {
 Snake.prototype.move = function () {
     var head = this.segments[0];
     var newHead; 
-    
-    if (this.nextDirection == "left" && this.direction == "right") {
-        this.nextDirection = "right";
-    }
-    else if (this.nextDirection == "right" && this.direction == "left") {
-        this.nextDirection = "left";
-    }
-    else if (this.nextDirection == "up" && this.direction == "down") {
-        this.nextDirection = "down";
-    }
-    else if (this.nextDirection == "down" && this.direction == "up") {
-        this.nextDirection = "up";
-    }
     
     this.direction = this.nextDirection;
     
@@ -87,6 +122,7 @@ Snake.prototype.move = function () {
         newHead = new Block(head.col, head.row - 1);
     }
     
+    // do this BEFORE adding the new head to the segments array
     if (this.checkCollision(newHead)) {
         gameOver();
         return;
@@ -95,17 +131,15 @@ Snake.prototype.move = function () {
     // push the new head at the first index of the array
     this.segments.unshift(newHead);
     
-//    if (newHead.equal(apple.position)) {
-//        score++;
-//        apple.move();
-//    }
-//    else {
-//        // remove the last square from the tail only when no apples
-//        this.segments.pop();
-//    }
+    if (newHead.equal(apple.position)) {
+        score++;
+        apple.move(this);
+    }
+    else {
+        // remove the last square from the tail only when no apples
+        this.segments.pop();
+    }
     
-    this.segments.pop();
-
 };
 
 //======================
@@ -122,11 +156,26 @@ Block.prototype.drawSquare = function (color) {
     ctx.fillRect(x, y, blockSize, blockSize);
 }
 
+// fill a circle in the block
+Block.prototype.drawCircle = function (color) {
+    var centerX = (this.col * blockSize) + (blockSize / 2);
+    var centerY = (this.row * blockSize) + (blockSize / 2);
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, blockSize / 2, 0, Math.PI*2, false);
+    ctx.fill();
+}
+
 // render the snake on the screen
 Snake.prototype.draw = function () {
     for(var i = 0; i < this.segments.length; i++) {
         this.segments[i].drawSquare("Blue");
     }
+}
+
+// draw an apple (circle) on the apple position
+Apple.prototype.draw = function () {
+    this.position.drawCircle("limeGreen");
 }
 
 // draw the score
@@ -146,7 +195,7 @@ var drawScore = function () {
 
 // draw game over
 var gameOver = function () {
-    cancelAnimationFrame(gameLoop);
+    cancelAnimationFrame(loopID);
     document.removeEventListener("keydown", keyBoardListner, true);
     ctx.font = "60px Courier";
     ctx.fillStyle = "Black";
@@ -156,20 +205,29 @@ var gameOver = function () {
 };
 
 
+
+
+/*
+===============
+Game Loop
+===============
+*/
+
 var snake = new Snake();
+var apple = new Apple();
 
 var frames = 0;
 
 function gameLoop () {
     frames ++;
-    requestAnimationFrame(gameLoop);
+    loopID = requestAnimationFrame(gameLoop);
     
     if (frames % 3 === 0) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawScore();
         snake.move();
         snake.draw();
-        //apple.draw();
+        apple.draw();
         //drawBorder();
         frames = 0;
     }
@@ -177,22 +235,38 @@ function gameLoop () {
 
 resize();
 // kick off rAF
-requestAnimationFrame(gameLoop);
+var loopID = requestAnimationFrame(gameLoop);
 
 
 //=======================
 /* Listen to actions */
-//=======================
+//=======================loopID
 
 var mapKeyborad = {
     37: "left",
     38: "up",
     39: "right",
-    40: "down"
+    40: "down",
+    80: "pause"
 };
 
 function keyBoardListner(event) {
-    snake.nextDirection = mapKeyborad[event.keyCode];
+    if (mapKeyborad[event.keyCode] !== undefined) {
+        
+        if(mapKeyborad[event.keyCode] === "pause"){
+            if(paused){
+                loopID = requestAnimationFrame(gameLoop);
+                paused = false;
+            }
+            else {
+                cancelAnimationFrame(loopID);
+                paused = true;
+            }
+        }
+        
+        else 
+            snake.setDirection(mapKeyborad[event.keyCode]);
+    }
 }
 
 document.addEventListener("keydown", keyBoardListner, true);

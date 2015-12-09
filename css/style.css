@@ -1,3 +1,6 @@
+* {
+    box-sizing: border-box;
+}
 html, body {
     height: 100%;
     margin: 0px;
@@ -11,5 +14,4 @@ body {
 
 canvas {
     background: lightseagreen;
-/*    border: 10px solid gray;*/
 }
