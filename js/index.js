@@ -271,6 +271,33 @@ function keyBoardListner(event) {
 
 document.addEventListener("keydown", keyBoardListner, true);
 
+
+canvas.addEventListener('touchstart', function(e){
+    var touchobj = e.changedTouches[0];
+    var touchX = parseInt(touchobj.pageX); // get x position of touch point relative to left edge of browser
+    
+    // if right side of the screen
+    if (touchX > window.innerWidth / 2) {
+        if (snake.direction == "right" || snake.direction == "left") {
+            snake.setDirection("up");
+        }
+        else {
+            snake.setDirection("right");
+        }
+    }
+    
+    // left side of the screen
+    else {
+        if(snake.direction == "left" || snake.direction == "right") {
+            snake.setDirection("down");
+        }
+        else {
+            snake.setDirection("left");
+        }
+    }
+    e.preventDefault();
+}, false);
+
 function resize () {
     var gameWidth = window.innerWidth;
     var gameHeight = window.innerHeight;
