@@ -4,17 +4,28 @@ var ctx = canvas.getContext("2d");
 var width = canvas.width;
 var height = canvas.height;
 
+//==================
+/* loading assets */
+//==================
+
+// assets source http://rembound.com/articles/creating-a-snake-game-tutorial-with-html5
+var sprite = new Image();
+sprite.onload = function () {
+    paused = false;
+}
+sprite.src = "assets/snake-graphics.png";
+
 //============
 /* Model */
 //============
 
-var blockSize = 20;
+var blockSize = 40;
 var widthInBlocks = width / blockSize;
 var heightInBlocks = height / blockSize;
 
 var score = 0;
 
-var paused = false;
+var paused = true;
 
 // Block constructor
 var Block = function (col, row){
@@ -41,7 +52,7 @@ Apple.prototype.move = function (snake) {
     
     for(var i = 0; i < snake.segments.length; i++) {
         if(snake.segments[i].equal(tempBlock)){
-            this.move();
+            this.move(snake);
             return;
         }
     }
@@ -166,16 +177,122 @@ Block.prototype.drawCircle = function (color) {
     ctx.fill();
 }
 
+Block.prototype.renderImage = function(xSprite, ySprite, widthInSprite, heightInSprite) {
+    ctx.drawImage(sprite, xSprite, ySprite, widthInSprite, heightInSprite, this.col * blockSize, this.row * blockSize, blockSize, blockSize);
+}
+
+
+Snake.prototype.headRender = function () {
+    if(snake.direction == "up")
+        this.segments[0].renderImage(194, 2, 60, 62);
+    else if(snake.direction == "down")
+        this.segments[0].renderImage(258, 64, 60, 62);
+    else if(snake.direction == "left")
+        this.segments[0].renderImage(194, 66, 62, 60);
+    else // right
+        this.segments[0].renderImage(256, 2, 62, 60);
+}
+
+Snake.prototype.tailRender = function () {
+    var theBlockBeforeTail = this.segments[this.segments.length - 2];
+    var tailBlock = this.segments[this.segments.length - 1];
+    
+    if(theBlockBeforeTail.row < tailBlock.row) {
+        // the tail goes up
+        tailBlock.renderImage(198, 128, 52, 59);
+    }
+    else if (theBlockBeforeTail.row > tailBlock.row) {
+        // the tail goes down
+        tailBlock.renderImage(262, 197, 52, 59);
+    }
+    else if (theBlockBeforeTail.col < tailBlock.col) {
+        // the tail goes left
+        tailBlock.renderImage(192, 198, 59, 52);
+    }
+    else if (theBlockBeforeTail.col > tailBlock.col) {
+        // the tail goes right
+        tailBlock.renderImage(261, 134, 59, 52)
+    }
+}
+
 // render the snake on the screen
 Snake.prototype.draw = function () {
-    for(var i = 0; i < this.segments.length; i++) {
-        this.segments[i].drawSquare("Blue");
+    this.headRender();
+    
+    var theBlockBefore = this.segments[0];
+    var theBlockAfter = this.segments[2];
+    
+    for(var i = 1; i < this.segments.length -1; i++) {
+        if(theBlockBefore.col == this.segments[i].col) { //vertical
+            
+            if(theBlockBefore.row < this.segments[i].row) { // down
+                if(theBlockAfter.col > this.segments[i].col) { // then right
+                    this.segments[i].renderImage(5, 70, 57, 52);
+                }
+                else if (theBlockAfter.col == this.segments[i].col) {
+                    // same vertical line
+                    this.segments[i].renderImage(133, 64, 53, 63);
+                }
+
+                else { // then left
+                    this.segments[i].renderImage(128, 134, 59, 52);
+                }
+            }   
+            else if (theBlockBefore.row > this.segments[i].row){ // up
+                if(theBlockAfter.col > this.segments[i].col) { // then right
+                    this.segments[i].renderImage(5, 5, 53, 58);
+                }
+                else if (theBlockAfter.col == this.segments[i].col) {
+                    // same vertical line
+                    this.segments[i].renderImage(133, 64, 53, 63);
+                }
+                else { // then left
+                    this.segments[i].renderImage(133, 5, 53, 53);
+                }
+            }
+
+        }
+        
+        else if (theBlockBefore.row == this.segments[i].row) { // horizontal
+            if(theBlockBefore.col < this.segments[i].col) { // right
+                if(theBlockAfter.row < this.segments[i].row) { // then up
+                    this.segments[i].renderImage(128, 134, 59, 52);
+                }
+                else if (theBlockAfter.row == this.segments[i].row) {
+                    // same horizontal line
+                    this.segments[i].renderImage(64, 6, 63, 52);
+                }
+                else { // then down
+                    this.segments[i].renderImage(133, 5, 53, 53);
+                }
+            }
+            else if (theBlockBefore.col > this.segments[i].col) { // left
+                if(theBlockAfter.row < this.segments[i].row) { // then up
+                    this.segments[i].renderImage(5, 70, 57, 52);
+                }
+                else if(theBlockAfter.row == this.segments[i].row) {
+                    // then same horizontal line
+                    this.segments[i].renderImage(64, 6, 63, 52);
+
+                }
+                else { // then down
+                    this.segments[i].renderImage(5, 5, 53, 58);
+                }
+            }
+        }
+                
+        theBlockBefore = this.segments[i];
+        theBlockAfter = this.segments[i+2];
+        //this.segments[i].drawSquare("Blue");
     }
+    
+    this.tailRender();
 }
 
 // draw an apple (circle) on the apple position
 Apple.prototype.draw = function () {
-    this.position.drawCircle("limeGreen");
+//    this.position.drawCircle("limeGreen");
+    this.position.renderImage(3, 194, 57, 61);
 }
 
 // draw the score
