@@ -9,9 +9,12 @@ body {
     display: -webkit-flex;
     -webkit-align-items: center;
     -webkit-justify-content: center;
-    background: lightblue;
+    background-image: url(../assets/grass3.jpg);
+    background-repeat: repeat;
 }
 
 canvas {
 /*    background: lightseagreen;*/
+    background: url(../assets/desert1.jpg);
+    background-size: 100% 100%;
 }

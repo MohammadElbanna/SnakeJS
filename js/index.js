@@ -15,11 +15,17 @@ sprite.onload = function () {
 }
 sprite.src = "assets/snake-graphics.png";
 
+var wall = new Image();
+wall.onload = function () {
+    paused = false;
+}
+wall.src = "assets/stone2.jpg"
+
 //============
 /* Model */
 //============
 
-var blockSize = 40;
+var blockSize = 10;
 var widthInBlocks = width / blockSize;
 var heightInBlocks = height / blockSize;
 
@@ -58,7 +64,8 @@ Apple.prototype.move = function (snake) {
     }
     // when we reach here, we now that the new position is safe.
     this.position = tempBlock;
-}
+}  
+
 
 
 // snake constructor
@@ -100,7 +107,7 @@ takes the head as input and return true if head hit the walls or the body of the
 */
 Snake.prototype.checkCollision = function (head) {
     
-    var wallCollision = (head.col == 0) || (head.row == 0) || (head.col == widthInBlocks - 1) || (head.row == heightInBlocks - 1);
+    var wallCollision = (head.col == 0) || (head.row == 0) || (head.col == Math.floor(widthInBlocks) - 1) || (head.row == Math.floor(heightInBlocks) - 1);
     
     var selfCollision = false;
     
@@ -115,7 +122,7 @@ Snake.prototype.checkCollision = function (head) {
 }
 
 Snake.prototype.move = function () {
-    var head = this.segments[0];
+    var head = this.segments[0];256
     var newHead; 
     
     this.direction = this.nextDirection;
@@ -143,7 +150,7 @@ Snake.prototype.move = function () {
     this.segments.unshift(newHead);
     
     if (newHead.equal(apple.position)) {
-        score++;
+        score = score + 10;
         apple.move(this);
     }
     else {
@@ -177,20 +184,20 @@ Block.prototype.drawCircle = function (color) {
     ctx.fill();
 }
 
-Block.prototype.renderImage = function(xSprite, ySprite, widthInSprite, heightInSprite) {
+Block.prototype.renderImage = function(sprite, xSprite, ySprite, widthInSprite, heightInSprite) {
     ctx.drawImage(sprite, xSprite, ySprite, widthInSprite, heightInSprite, this.col * blockSize, this.row * blockSize, blockSize, blockSize);
 }
 
 
 Snake.prototype.headRender = function () {
     if(snake.direction == "up")
-        this.segments[0].renderImage(194, 2, 60, 62);
+        this.segments[0].renderImage(sprite, 194, 2, 60, 62);
     else if(snake.direction == "down")
-        this.segments[0].renderImage(258, 64, 60, 62);
+        this.segments[0].renderImage(sprite, 258, 64, 60, 62);
     else if(snake.direction == "left")
-        this.segments[0].renderImage(194, 66, 62, 60);
+        this.segments[0].renderImage(sprite, 194, 66, 62, 60);
     else // right
-        this.segments[0].renderImage(256, 2, 62, 60);
+        this.segments[0].renderImage(sprite, 256, 2, 62, 60);
 }
 
 Snake.prototype.tailRender = function () {
@@ -199,19 +206,19 @@ Snake.prototype.tailRender = function () {
     
     if(theBlockBeforeTail.row < tailBlock.row) {
         // the tail goes up
-        tailBlock.renderImage(198, 128, 52, 59);
+        tailBlock.renderImage(sprite, 198, 128, 52, 59);
     }
     else if (theBlockBeforeTail.row > tailBlock.row) {
         // the tail goes down
-        tailBlock.renderImage(262, 197, 52, 59);
+        tailBlock.renderImage(sprite, 262, 197, 52, 59);
     }
     else if (theBlockBeforeTail.col < tailBlock.col) {
         // the tail goes left
-        tailBlock.renderImage(192, 198, 59, 52);
+        tailBlock.renderImage(sprite, 192, 198, 59, 52);
     }
     else if (theBlockBeforeTail.col > tailBlock.col) {
         // the tail goes right
-        tailBlock.renderImage(261, 134, 59, 52)
+        tailBlock.renderImage(sprite, 261, 134, 59, 52)
     }
 }
 
@@ -227,27 +234,27 @@ Snake.prototype.draw = function () {
             
             if(theBlockBefore.row < this.segments[i].row) { // down
                 if(theBlockAfter.col > this.segments[i].col) { // then right
-                    this.segments[i].renderImage(5, 70, 57, 52);
+                    this.segments[i].renderImage(sprite, 5, 70, 57, 52);
                 }
                 else if (theBlockAfter.col == this.segments[i].col) {
                     // same vertical line
-                    this.segments[i].renderImage(133, 64, 53, 63);
+                    this.segments[i].renderImage(sprite, 134, 64, 52, 63);
                 }
 
                 else { // then left
-                    this.segments[i].renderImage(128, 134, 59, 52);
+                    this.segments[i].renderImage(sprite, 128, 134, 59, 52);
                 }
             }   
             else if (theBlockBefore.row > this.segments[i].row){ // up
                 if(theBlockAfter.col > this.segments[i].col) { // then right
-                    this.segments[i].renderImage(5, 5, 53, 58);
+                    this.segments[i].renderImage(sprite, 5, 5, 53, 58);
                 }
                 else if (theBlockAfter.col == this.segments[i].col) {
                     // same vertical line
-                    this.segments[i].renderImage(133, 64, 53, 63);
+                    this.segments[i].renderImage(sprite, 134, 64, 52, 63);
                 }
                 else { // then left
-                    this.segments[i].renderImage(133, 5, 53, 53);
+                    this.segments[i].renderImage(sprite, 133, 5, 53, 53);
                 }
             }
 
@@ -256,27 +263,27 @@ Snake.prototype.draw = function () {
         else if (theBlockBefore.row == this.segments[i].row) { // horizontal
             if(theBlockBefore.col < this.segments[i].col) { // right
                 if(theBlockAfter.row < this.segments[i].row) { // then up
-                    this.segments[i].renderImage(128, 134, 59, 52);
+                    this.segments[i].renderImage(sprite, 128, 134, 59, 52);
                 }
                 else if (theBlockAfter.row == this.segments[i].row) {
                     // same horizontal line
-                    this.segments[i].renderImage(64, 6, 63, 52);
+                    this.segments[i].renderImage(sprite, 64, 6, 63, 52);
                 }
                 else { // then down
-                    this.segments[i].renderImage(133, 5, 53, 53);
+                    this.segments[i].renderImage(sprite, 133, 5, 53, 53);
                 }
             }
             else if (theBlockBefore.col > this.segments[i].col) { // left
                 if(theBlockAfter.row < this.segments[i].row) { // then up
-                    this.segments[i].renderImage(5, 70, 57, 52);
+                    this.segments[i].renderImage(sprite, 5, 70, 57, 52);
                 }
                 else if(theBlockAfter.row == this.segments[i].row) {
                     // then same horizontal line
-                    this.segments[i].renderImage(64, 6, 63, 52);
+                    this.segments[i].renderImage(sprite, 64, 6, 63, 52);
 
                 }
                 else { // then down
-                    this.segments[i].renderImage(5, 5, 53, 58);
+                    this.segments[i].renderImage(sprite, 5, 5, 53, 58);
                 }
             }
         }
@@ -292,12 +299,12 @@ Snake.prototype.draw = function () {
 // draw an apple (circle) on the apple position
 Apple.prototype.draw = function () {
 //    this.position.drawCircle("limeGreen");
-    this.position.renderImage(3, 194, 57, 61);
+    this.position.renderImage(sprite, 3, 194, 57, 61);
 }
 
 // draw the score
 var drawScore = function () {
-    ctx.font = "20px Courier";
+    ctx.font = blockSize + "px Courier";
     ctx.fillStyle = "Black";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
@@ -306,15 +313,37 @@ var drawScore = function () {
 
 // drawing border 
 // border was drawn using css instead of drawing it with the canvas
-//var drawBorder = function () {
-//    
-//};
+var drawBorder = function () {
+    // drawing top and bottom
+    var i;
+    var tempBlock = new Block(0, 0);
+    var tempBlock2 = new Block(0, heightInBlocks -1);
+    
+    for (i = 0; i < widthInBlocks; i++) {
+        tempBlock.renderImage(wall, 0, 0, 236, 236);
+        tempBlock.col += 1;
+        tempBlock2.renderImage(wall, 0, 0, 236, 236);
+        tempBlock2.col += 1;
+
+    }
+    
+    tempBlock = new Block(0, 0)
+    tempBlock2 = new Block(widthInBlocks -1, 0);
+    
+    for (i = 0; i < heightInBlocks; i++) {
+        tempBlock.renderImage(wall, 0, 0, 236, 236);
+        tempBlock.row += 1;
+        tempBlock2.renderImage(wall, 0, 0, 236, 236);
+        tempBlock2.row += 1;
+
+    }
+};
 
 // draw game over
 var gameOver = function () {
     cancelAnimationFrame(loopID);
     document.removeEventListener("keydown", keyBoardListner, true);
-    ctx.font = "60px Courier";
+    ctx.font = blockSize*2 + "px Courier";
     ctx.fillStyle = "Black";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
@@ -341,11 +370,11 @@ function gameLoop () {
     
     if (frames % 3 === 0) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawScore();
         snake.move();
         snake.draw();
         apple.draw();
-        //drawBorder();
+        drawBorder();
+        drawScore();
         frames = 0;
     }
 }
@@ -357,7 +386,7 @@ var loopID = requestAnimationFrame(gameLoop);
 
 //=======================
 /* Listen to actions */
-//=======================loopID
+//=======================
 
 var mapKeyborad = {
     37: "left",
@@ -416,24 +445,30 @@ canvas.addEventListener('touchstart', function(e){
 }, false);
 
 function resize () {
-    var gameWidth = window.innerWidth;
-    var gameHeight = window.innerHeight;
-    var scaleToFitX = gameWidth / 1280;
-    var scaleToFitY = gameHeight / 720;
-
-    var currentScreenRatio = gameWidth / gameHeight;
-    var optimalRatio = Math.min(scaleToFitX, scaleToFitY);
-//    var optimalRatio = Math.max(scaleToFitX, scaleToFitY);
-
-    // 16:9 screen sizes.
-    if (currentScreenRatio >= 1.77 && currentScreenRatio <= 1.79) {
-        canvas.style.width = gameWidth + "px";
-        canvas.style.height = gameHeight + "px";
+    var newWidth = window.innerWidth;
+    var newHeight = window.innerHeight;
+    var newRatio = newWidth / newHeight;
+    var oldRatio = 1280 / 720 ;
+    
+    if (newRatio > oldRatio) {
+        // we need to adjust the width
+        newWidth = newHeight * oldRatio;
     }
     else {
-        canvas.style.width = 1280 * scaleToFitX + "px";
-        canvas.style.height = 720 * scaleToFitY + "px";
+        newHeight = newWidth / oldRatio;
     }
+    canvas.style.width = newWidth + "px";
+    canvas.style.height = newHeight + "px"
+    
+    canvas.width = newWidth;
+    canvas.height = newHeight;
+    
+    width = newWidth;
+    height = newHeight;
+    blockSize = 40 * canvas.width / 1280;
+    
+    widthInBlocks = width / blockSize;
+    heightInBlocks = height / blockSize;
 }
 
 window.addEventListener("resize", resize, true)
