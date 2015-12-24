@@ -19,7 +19,7 @@ var wall = new Image();
 wall.onload = function () {
     paused = false;
 }
-wall.src = "assets/stone2.jpg"
+wall.src = "assets/stone5.jpg"
 
 //============
 /* Model */
@@ -320,9 +320,9 @@ var drawBorder = function () {
     var tempBlock2 = new Block(0, heightInBlocks -1);
     
     for (i = 0; i < widthInBlocks; i++) {
-        tempBlock.renderImage(wall, 0, 0, 236, 236);
+        tempBlock.renderImage(wall, 0, 0, 256, 256);
         tempBlock.col += 1;
-        tempBlock2.renderImage(wall, 0, 0, 236, 236);
+        tempBlock2.renderImage(wall, 0, 0, 256, 256);
         tempBlock2.col += 1;
 
     }
@@ -331,9 +331,9 @@ var drawBorder = function () {
     tempBlock2 = new Block(widthInBlocks -1, 0);
     
     for (i = 0; i < heightInBlocks; i++) {
-        tempBlock.renderImage(wall, 0, 0, 236, 236);
+        tempBlock.renderImage(wall, 0, 0, 256, 256);
         tempBlock.row += 1;
-        tempBlock2.renderImage(wall, 0, 0, 236, 236);
+        tempBlock2.renderImage(wall, 0, 0, 256, 256);
         tempBlock2.row += 1;
 
     }
