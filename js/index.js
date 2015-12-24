@@ -4,22 +4,6 @@ var ctx = canvas.getContext("2d");
 var width = canvas.width;
 var height = canvas.height;
 
-//==================
-/* loading assets */
-//==================
-
-// assets source http://rembound.com/articles/creating-a-snake-game-tutorial-with-html5
-var sprite = new Image();
-sprite.onload = function () {
-    paused = false;
-}
-sprite.src = "assets/snake-graphics.png";
-
-var wall = new Image();
-wall.onload = function () {
-    paused = false;
-}
-wall.src = "assets/stone5.jpg"
 
 //============
 /* Model */
@@ -381,7 +365,7 @@ function gameLoop () {
 
 resize();
 // kick off rAF
-var loopID = requestAnimationFrame(gameLoop);
+var loopID;
 
 
 //=======================
@@ -472,4 +456,33 @@ function resize () {
 }
 
 window.addEventListener("resize", resize, true)
+
+
+var sprite1loaded = false;
+var sprite2loaded = false;
+//==================
+/* loading assets */
+//==================
+
+// assets source http://rembound.com/articles/creating-a-snake-game-tutorial-with-html5
+var sprite = new Image();
+sprite.onload = function () {
+    sprite1loaded = true;
+    if(sprite2loaded) {
+        paused = false;
+        loopID = requestAnimationFrame(gameLoop);
+    }
+        
+}
+sprite.src = "assets/snake-graphics.png";
+
+var wall = new Image();
+wall.onload = function () {
+    sprite2loaded = true;
+    if(sprite1loaded) {
+        paused = false;
+        loopID = requestAnimationFrame(gameLoop);
+    }
+}
+wall.src = "assets/stone5.jpg"
 
