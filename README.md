@@ -1,11 +1,11 @@
 # SnakeJS
 The classic snake game implemented in vanilla javascript
 
-##Demo
+## Demo
 This game is fully responsive and is playable on all screen sizes. It's more suited in landscape mode.  
 You can try a demo [here](http://mohammadelbanna.github.io/SnakeJS/).
 
-##Controls
+## Controls
 It's very simple! on a desktop just use your arrow keys to control the direction of the snake. you can also press "p" to 
 pause the game.
 
@@ -21,13 +21,13 @@ You can touch the left half of the screen to:
 This is like playing the classic snake game on Nokia 3310 with only two keys, 3 and 7 ( the master's way ;) ).
 
 
-##Rendering method
+## Rendering method
 Canvas element is used as the rendering method in this game.  
 I used the game loop pattern to animate objects on the screen. In each iteration the whole canvas is cleared and is
 painted all over again.  
 I used the requestAnimationFrame instead of setTimeout to sync the iterations with the browser painting events.
 
-##Canvas and DOM
+## Canvas and DOM
 Canvas element's drawImage method is more convenient and stright forward than CSS 
 properties _**background-size**_ and _**background-position**_
 when dealing with sprite sheets.  
@@ -41,7 +41,7 @@ your life easier when having a layout module like flexbox that could be used for
 
 A hybrid approach is generally possible but that wasn't this project approach.
 
-##Acknowledgments
+## Acknowledgments
 A lot of the implementation was inspired by Nick Morgan's book [Javascript for kids](http://www.amazon.com/JavaScript-Kids-Playful-Introduction-Programming/dp/1593274084) 
 especially the chapter on the snake game, though no sprite sheet was used and the game was designed for a fixed screen size.
 
